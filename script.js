@@ -305,16 +305,30 @@ function displayResults(restaurants) {
 // 지도에 표시
 function displayMap(restaurants) {
     const mapSection = document.getElementById('mapSection');
+    const mapContainer = document.getElementById('map');
+
+    // 카카오맵 API 로드 확인
+    if (typeof kakao === 'undefined' || !kakao.maps) {
+        console.error('카카오맵 API가 로드되지 않았습니다.');
+        mapContainer.innerHTML = '<div style="padding:50px;text-align:center;color:#7f8c8d;">지도를 로드할 수 없습니다.</div>';
+        mapSection.style.display = 'block';
+        return;
+    }
+
     mapSection.style.display = 'block';
 
+    // 기존 지도가 있으면 제거
+    mapContainer.innerHTML = '';
+
     // 지도 생성
-    const mapContainer = document.getElementById('map');
     const mapOption = {
         center: new kakao.maps.LatLng(currentLocation.lat, currentLocation.lng),
         level: 3
     };
 
-    map = new kakao.maps.Map(mapContainer, mapOption);
+    // 지도 렌더링을 위한 약간의 지연
+    setTimeout(() => {
+        map = new kakao.maps.Map(mapContainer, mapOption);
 
     // 마커 표시
     restaurants.forEach((restaurant, index) => {
@@ -337,12 +351,13 @@ function displayMap(restaurants) {
         markers.push(marker);
     });
 
-    // 지도 범위 재설정
-    const bounds = new kakao.maps.LatLngBounds();
-    restaurants.forEach(restaurant => {
-        bounds.extend(new kakao.maps.LatLng(restaurant.y, restaurant.x));
-    });
-    map.setBounds(bounds);
+        // 지도 범위 재설정
+        const bounds = new kakao.maps.LatLngBounds();
+        restaurants.forEach(restaurant => {
+            bounds.extend(new kakao.maps.LatLng(restaurant.y, restaurant.x));
+        });
+        map.setBounds(bounds);
+    }, 100); // 100ms 지연
 }
 
 // 데모 식당 데이터 (API 키가 없을 때)

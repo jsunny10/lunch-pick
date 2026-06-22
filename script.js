@@ -32,13 +32,41 @@ document.addEventListener('DOMContentLoaded', function() {
         debugConsole.style.display = debugConsole.style.display === 'none' ? 'block' : 'none';
     });
 
-    // 카카오맵 SDK 로드 확인
-    if (typeof kakao === 'undefined') {
-        debugLog('카카오맵 API가 로드되지 않았습니다!', 'error');
-        console.warn('카카오맵 API 키를 설정해주세요.');
-    } else {
-        debugLog('카카오맵 API 로드 성공', 'info');
-    }
+    // 카카오맵 SDK 로드 확인 (지연 체크)
+    setTimeout(function() {
+        if (typeof kakao === 'undefined' || !kakao.maps) {
+            debugLog('❌ 카카오맵 API가 로드되지 않았습니다!', 'error');
+
+            if (window.kakaoMapError) {
+                debugLog(`원인: ${window.kakaoMapError}`, 'error');
+            }
+
+            // 상세 오류 메시지
+            const errorMsg = `
+카카오맵 API 로드 실패!
+
+해결 방법:
+1. 카카오 개발자 콘솔 접속
+   https://developers.kakao.com/console/app
+
+2. Lunch Pick 앱 선택
+
+3. '플랫폼' 메뉴에서 Web 플랫폼 등록:
+   https://jsunny10.github.io
+
+4. 브라우저 캐시 삭제 후 새로고침
+   (Ctrl + Shift + Delete)
+
+현재 API 키: 3ea26b...bcd
+            `.trim();
+
+            console.error(errorMsg);
+            debugLog('플랫폼 등록 확인 필요!', 'error');
+        } else {
+            debugLog('✅ 카카오맵 API 로드 성공', 'info');
+            console.log('카카오맵 버전:', kakao.maps);
+        }
+    }, 1000);
 
     // 전역 에러 핸들러
     window.addEventListener('error', function(e) {

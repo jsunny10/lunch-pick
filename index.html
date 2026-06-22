@@ -154,7 +154,17 @@
     <button id="debugToggle" style="position: fixed; bottom: 10px; right: 10px; background: #FF6B6B; color: white; border: none; border-radius: 50%; width: 50px; height: 50px; font-size: 20px; z-index: 10001; box-shadow: 0 4px 10px rgba(0,0,0,0.3);">🐛</button>
 
     <!-- 카카오맵 SDK -->
-    <script type="text/javascript" src="https://dapi.kakao.com/v2/maps/sdk.js?appkey=3ea26b20c31bc05c0d19a88ef20a3bcd&libraries=services"></script>
+    <script>
+        // 카카오맵 로드 완료 확인
+        window.kakaoMapLoaded = false;
+        window.kakaoMapError = null;
+    </script>
+    <script
+        type="text/javascript"
+        src="https://dapi.kakao.com/v2/maps/sdk.js?appkey=3ea26b20c31bc05c0d19a88ef20a3bcd&libraries=services&autoload=false"
+        onload="window.kakaoMapLoaded = true; kakao.maps.load(function() { console.log('카카오맵 로드 성공'); });"
+        onerror="window.kakaoMapError = 'SDK 로드 실패';">
+    </script>
     <script src="script.js"></script>
 </body>
 </html>

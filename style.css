@@ -1,0 +1,540 @@
+/* 기본 설정 */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    --primary: #FF6B6B;
+    --primary-dark: #EE5A52;
+    --secondary: #4ECDC4;
+    --accent: #FFE66D;
+    --success: #95E1D3;
+    --bg-light: #F7F7F7;
+    --bg-white: #FFFFFF;
+    --text-dark: #2C3E50;
+    --text-gray: #7F8C8D;
+    --border: #E0E0E0;
+    --shadow: rgba(0, 0, 0, 0.1);
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    color: var(--text-dark);
+    -webkit-font-smoothing: antialiased;
+}
+
+/* 헤더 */
+.header {
+    background: var(--bg-white);
+    padding: 1.5rem 0;
+    box-shadow: 0 2px 10px var(--shadow);
+    margin-bottom: 2rem;
+}
+
+.logo {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--primary);
+    text-align: center;
+    margin-bottom: 0.25rem;
+}
+
+.subtitle {
+    text-align: center;
+    color: var(--text-gray);
+    font-size: 0.95rem;
+}
+
+/* 컨테이너 */
+.container {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 0 1rem 2rem;
+}
+
+/* 설정 패널 */
+.settings-panel {
+    background: var(--bg-white);
+    border-radius: 20px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 20px var(--shadow);
+    margin-bottom: 1.5rem;
+}
+
+.section-title {
+    font-size: 1.3rem;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+    color: var(--text-dark);
+}
+
+/* 설정 그룹 */
+.setting-group {
+    margin-bottom: 1.5rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--border);
+}
+
+.setting-group:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
+}
+
+.setting-label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.75rem;
+    font-weight: 600;
+    color: var(--text-dark);
+}
+
+.label-icon {
+    font-size: 1.3rem;
+}
+
+/* 인원 선택 */
+.number-selector {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+}
+
+.btn-count {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 2px solid var(--primary);
+    background: var(--bg-white);
+    color: var(--primary);
+    font-size: 1.5rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.btn-count:hover {
+    background: var(--primary);
+    color: var(--bg-white);
+    transform: scale(1.1);
+}
+
+#peopleCount {
+    width: 60px;
+    height: 40px;
+    text-align: center;
+    border: 2px solid var(--border);
+    border-radius: 10px;
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--text-dark);
+}
+
+/* 위치 입력 */
+.location-input-group {
+    display: flex;
+    gap: 0.5rem;
+}
+
+#locationInput {
+    flex: 1;
+    padding: 0.75rem 1rem;
+    border: 2px solid var(--border);
+    border-radius: 12px;
+    font-size: 0.95rem;
+    transition: border-color 0.3s;
+}
+
+#locationInput:focus {
+    outline: none;
+    border-color: var(--primary);
+}
+
+.btn-location {
+    width: 50px;
+    height: 50px;
+    border-radius: 12px;
+    border: none;
+    background: var(--primary);
+    color: white;
+    font-size: 1.3rem;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.btn-location:hover {
+    background: var(--primary-dark);
+    transform: scale(1.05);
+}
+
+/* 거리 선택 버튼 */
+.distance-selector {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5rem;
+}
+
+.btn-distance {
+    padding: 0.75rem;
+    border: 2px solid var(--border);
+    border-radius: 12px;
+    background: var(--bg-white);
+    color: var(--text-dark);
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.btn-distance:hover {
+    border-color: var(--secondary);
+    color: var(--secondary);
+}
+
+.btn-distance.active {
+    background: var(--secondary);
+    border-color: var(--secondary);
+    color: var(--bg-white);
+}
+
+/* 음식 종류 선택 */
+.food-type-selector {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.5rem;
+}
+
+.btn-food-type {
+    padding: 0.75rem 0.5rem;
+    border: 2px solid var(--border);
+    border-radius: 12px;
+    background: var(--bg-white);
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.btn-food-type:hover {
+    border-color: var(--accent);
+    transform: translateY(-2px);
+}
+
+.btn-food-type.active {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: var(--text-dark);
+}
+
+/* 예산 설정 */
+.budget-selector {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.budget-selector select {
+    padding: 0.75rem;
+    border: 2px solid var(--border);
+    border-radius: 12px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    background: var(--bg-white);
+    cursor: pointer;
+}
+
+#budgetRange {
+    width: 100%;
+    height: 8px;
+    border-radius: 5px;
+    outline: none;
+    -webkit-appearance: none;
+    background: var(--border);
+}
+
+#budgetRange::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: var(--primary);
+    cursor: pointer;
+    box-shadow: 0 2px 5px var(--shadow);
+}
+
+.budget-label {
+    text-align: center;
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--primary);
+}
+
+/* 별점 선택 */
+.rating-selector {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.5rem;
+}
+
+.btn-rating {
+    padding: 0.75rem;
+    border: 2px solid var(--border);
+    border-radius: 12px;
+    background: var(--bg-white);
+    color: var(--text-dark);
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.btn-rating:hover {
+    border-color: var(--accent);
+}
+
+.btn-rating.active {
+    background: var(--accent);
+    border-color: var(--accent);
+}
+
+/* 다이어트 토글 스위치 */
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 60px;
+    height: 34px;
+}
+
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: var(--border);
+    transition: 0.4s;
+    border-radius: 34px;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 26px;
+    width: 26px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    transition: 0.4s;
+    border-radius: 50%;
+}
+
+input:checked + .slider {
+    background-color: var(--success);
+}
+
+input:checked + .slider:before {
+    transform: translateX(26px);
+}
+
+/* 추천 버튼 */
+.action-section {
+    margin-bottom: 1.5rem;
+}
+
+.btn-recommend {
+    width: 100%;
+    padding: 1.2rem;
+    border: none;
+    border-radius: 20px;
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+    color: var(--bg-white);
+    font-size: 1.3rem;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(255, 107, 107, 0.4);
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.btn-recommend:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(255, 107, 107, 0.5);
+}
+
+.btn-recommend:active {
+    transform: translateY(0);
+}
+
+/* 결과 영역 */
+.result-section {
+    background: var(--bg-white);
+    border-radius: 20px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 20px var(--shadow);
+    margin-bottom: 1.5rem;
+    animation: slideUp 0.5s ease;
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.restaurant-card {
+    border: 2px solid var(--border);
+    border-radius: 15px;
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+}
+
+.restaurant-name {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-dark);
+    margin-bottom: 0.5rem;
+}
+
+.restaurant-category {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    background: var(--accent);
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+}
+
+.restaurant-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    color: var(--text-gray);
+    font-size: 0.95rem;
+}
+
+.restaurant-rating {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--primary);
+}
+
+/* 지도 영역 */
+.map-section {
+    background: var(--bg-white);
+    border-radius: 20px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 20px var(--shadow);
+    animation: slideUp 0.5s ease 0.2s both;
+}
+
+.map-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+}
+
+#map {
+    width: 100%;
+    height: 300px;
+    border-radius: 15px;
+    overflow: hidden;
+}
+
+/* 로딩 오버레이 */
+.loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 1rem;
+    z-index: 9999;
+}
+
+.loading-overlay.active {
+    display: flex;
+}
+
+.loading-spinner {
+    width: 60px;
+    height: 60px;
+    border: 5px solid rgba(255, 255, 255, 0.3);
+    border-top-color: var(--primary);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+.loading-text {
+    color: white;
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+/* 모바일 최적화 */
+@media (max-width: 480px) {
+    .container {
+        padding: 0 0.75rem 1.5rem;
+    }
+
+    .settings-panel {
+        padding: 1.25rem;
+    }
+
+    .logo {
+        font-size: 1.75rem;
+    }
+
+    .section-title {
+        font-size: 1.2rem;
+    }
+
+    .food-type-selector {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .btn-food-type {
+        font-size: 0.85rem;
+        padding: 0.65rem 0.4rem;
+    }
+}
+
+/* 다크모드 대응 */
+@media (prefers-color-scheme: dark) {
+    body {
+        background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+    }
+}

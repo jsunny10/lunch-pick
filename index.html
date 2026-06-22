@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>🍽️ Lunch Pick - 점심 메뉴 추천</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- 헤더 -->
+    <header class="header">
+        <div class="container">
+            <h1 class="logo">🍽️ Lunch Pick</h1>
+            <p class="subtitle">오늘 뭐 먹지? 고민 끝!</p>
+        </div>
+    </header>
+
+    <!-- 메인 컨텐츠 -->
+    <main class="container">
+        <!-- 설정 패널 -->
+        <section class="settings-panel">
+            <h2 class="section-title">🎯 선호 조건 설정</h2>
+
+            <!-- 인원 선택 -->
+            <div class="setting-group">
+                <label class="setting-label">
+                    <span class="label-icon">👥</span>
+                    <span class="label-text">인원</span>
+                </label>
+                <div class="number-selector">
+                    <button class="btn-count" onclick="decreaseCount()">-</button>
+                    <input type="number" id="peopleCount" value="2" min="1" max="10" readonly>
+                    <button class="btn-count" onclick="increaseCount()">+</button>
+                </div>
+            </div>
+
+            <!-- 위치 설정 -->
+            <div class="setting-group">
+                <label class="setting-label">
+                    <span class="label-icon">📍</span>
+                    <span class="label-text">위치</span>
+                </label>
+                <div class="location-input-group">
+                    <input type="text" id="locationInput" placeholder="주소를 입력하세요">
+                    <button class="btn-location" onclick="getCurrentLocation()">
+                        <span class="location-icon">📍</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- 이동 거리 -->
+            <div class="setting-group">
+                <label class="setting-label">
+                    <span class="label-icon">🚶</span>
+                    <span class="label-text">이동 거리</span>
+                </label>
+                <div class="distance-selector">
+                    <button class="btn-distance active" data-distance="500" onclick="selectDistance(500)">도보 500m</button>
+                    <button class="btn-distance" data-distance="1000" onclick="selectDistance(1000)">도보 1km</button>
+                    <button class="btn-distance" data-distance="3000" onclick="selectDistance(3000)">차량 3km</button>
+                    <button class="btn-distance" data-distance="5000" onclick="selectDistance(5000)">차량 5km</button>
+                </div>
+            </div>
+
+            <!-- 음식 종류 -->
+            <div class="setting-group">
+                <label class="setting-label">
+                    <span class="label-icon">🍜</span>
+                    <span class="label-text">음식 종류</span>
+                </label>
+                <div class="food-type-selector">
+                    <button class="btn-food-type active" data-type="한식" onclick="toggleFoodType(this)">🍚 한식</button>
+                    <button class="btn-food-type" data-type="양식" onclick="toggleFoodType(this)">🍝 양식</button>
+                    <button class="btn-food-type" data-type="일식" onclick="toggleFoodType(this)">🍣 일식</button>
+                    <button class="btn-food-type" data-type="중식" onclick="toggleFoodType(this)">🥟 중식</button>
+                    <button class="btn-food-type" data-type="아시아" onclick="toggleFoodType(this)">🍛 아시아</button>
+                </div>
+            </div>
+
+            <!-- 예산 설정 -->
+            <div class="setting-group">
+                <label class="setting-label">
+                    <span class="label-icon">💰</span>
+                    <span class="label-text">예산</span>
+                </label>
+                <div class="budget-selector">
+                    <select id="budgetType" onchange="updateBudgetLabel()">
+                        <option value="per">인당</option>
+                        <option value="total">전체</option>
+                    </select>
+                    <input type="range" id="budgetRange" min="5000" max="50000" step="1000" value="15000" oninput="updateBudgetLabel()">
+                    <span class="budget-label" id="budgetLabel">15,000원</span>
+                </div>
+            </div>
+
+            <!-- 별점 필터 -->
+            <div class="setting-group">
+                <label class="setting-label">
+                    <span class="label-icon">⭐</span>
+                    <span class="label-text">최소 별점</span>
+                </label>
+                <div class="rating-selector">
+                    <button class="btn-rating" data-rating="0" onclick="selectRating(0)">전체</button>
+                    <button class="btn-rating active" data-rating="3.0" onclick="selectRating(3.0)">3.0+</button>
+                    <button class="btn-rating" data-rating="4.0" onclick="selectRating(4.0)">4.0+</button>
+                    <button class="btn-rating" data-rating="4.5" onclick="selectRating(4.5)">4.5+</button>
+                </div>
+            </div>
+
+            <!-- 다이어트 모드 -->
+            <div class="setting-group">
+                <label class="setting-label">
+                    <span class="label-icon">🥗</span>
+                    <span class="label-text">다이어트 모드</span>
+                </label>
+                <label class="switch">
+                    <input type="checkbox" id="dietMode">
+                    <span class="slider"></span>
+                </label>
+            </div>
+        </section>
+
+        <!-- 추천 버튼 -->
+        <div class="action-section">
+            <button class="btn-recommend" onclick="recommendRestaurant()">
+                <span class="btn-icon">🎲</span>
+                <span class="btn-text">추천 받기</span>
+            </button>
+        </div>
+
+        <!-- 결과 영역 -->
+        <section class="result-section" id="resultSection" style="display: none;">
+            <h2 class="section-title">🎉 오늘의 추천</h2>
+            <div id="resultContent"></div>
+        </section>
+
+        <!-- 지도 영역 -->
+        <section class="map-section" id="mapSection" style="display: none;">
+            <h3 class="map-title">📍 위치 보기</h3>
+            <div id="map"></div>
+        </section>
+    </main>
+
+    <!-- 로딩 오버레이 -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner"></div>
+        <p class="loading-text">맛집을 찾는 중...</p>
+    </div>
+
+    <!-- 카카오맵 SDK -->
+    <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=YOUR_KAKAO_API_KEY&libraries=services"></script>
+    <script src="script.js"></script>
+</body>
+</html>

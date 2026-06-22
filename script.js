@@ -462,29 +462,33 @@ function displayMap(restaurants) {
 
 // 데모 식당 데이터 (API 키가 없을 때)
 function showDemoRestaurants() {
+    debugLog('데모 데이터 표시 (API 실패)', 'error');
+
+    alert('카카오맵 API 오류가 발생했습니다.\n\n가능한 원인:\n1. 플랫폼 미등록 (https://jsunny10.github.io)\n2. API 키 권한 문제\n3. 해당 지역에 식당 없음\n\n🐛 버튼을 눌러 자세한 로그를 확인하세요.');
+
     const demoRestaurants = [
         {
-            place_name: '맛있는 한식당',
+            place_name: '🔧 데모: 맛있는 한식당',
             category_name: '음식점 > 한식',
             address_name: '서울 중구 세종대로 110',
             phone: '02-1234-5678',
             distance: 450,
-            rating: 4.5
+            rating: 4.5,
+            y: 37.5665,
+            x: 126.9780
         },
         {
-            place_name: '행복 파스타',
+            place_name: '🔧 데모: 행복 파스타',
             category_name: '음식점 > 양식',
             address_name: '서울 중구 을지로 30',
             phone: '02-2345-6789',
             distance: 650,
-            rating: 4.3
+            rating: 4.3,
+            y: 37.5660,
+            x: 126.9800
         }
     ];
 
     displayResults(demoRestaurants);
-
-    const mapSection = document.getElementById('mapSection');
-    mapSection.style.display = 'block';
-    document.getElementById('map').innerHTML =
-        '<div style="padding:20px;text-align:center;color:#7f8c8d;">카카오맵 API 키를 설정하면 지도가 표시됩니다.</div>';
+    displayMap(demoRestaurants);
 }

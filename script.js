@@ -7,7 +7,7 @@ let map;
 let markers = [];
 
 // 카카오맵 API 키 확인
-const KAKAO_API_KEY = 'YOUR_KAKAO_API_KEY'; // TODO: 실제 API 키로 교체
+const KAKAO_API_KEY = '3ea26b20c31bc05c0d19a88ef20a3bcd'; // TODO: 실제 API 키로 교체
 
 // 페이지 로드 시 초기화
 document.addEventListener('DOMContentLoaded', function() {

@@ -36,38 +36,74 @@ function decreaseCount() {
 
 // 현재 위치 가져오기
 function getCurrentLocation() {
-    if (navigator.geolocation) {
-        showLoading();
-        navigator.geolocation.getCurrentPosition(
-            (position) => {
-                currentLocation = {
-                    lat: position.coords.latitude,
-                    lng: position.coords.longitude
-                };
-
-                // 주소 변환
-                if (typeof kakao !== 'undefined') {
-                    const geocoder = new kakao.maps.services.Geocoder();
-                    geocoder.coord2Address(currentLocation.lng, currentLocation.lat, (result, status) => {
-                        if (status === kakao.maps.services.Status.OK) {
-                            const address = result[0].address.address_name;
-                            document.getElementById('locationInput').value = address;
-                        }
-                        hideLoading();
-                    });
-                } else {
-                    document.getElementById('locationInput').value = '현재 위치';
-                    hideLoading();
-                }
-            },
-            (error) => {
-                alert('위치를 가져올 수 없습니다. 주소를 직접 입력해주세요.');
-                hideLoading();
-            }
-        );
-    } else {
+    if (!navigator.geolocation) {
         alert('이 브라우저는 위치 서비스를 지원하지 않습니다.');
+        return;
     }
+
+    showLoading();
+
+    // 타임아웃 설정 (10초)
+    const timeout = setTimeout(() => {
+        hideLoading();
+        alert('위치 정보를 가져오는데 시간이 너무 오래 걸립니다. 주소를 직접 입력해주세요.');
+    }, 10000);
+
+    navigator.geolocation.getCurrentPosition(
+        (position) => {
+            clearTimeout(timeout);
+            currentLocation = {
+                lat: position.coords.latitude,
+                lng: position.coords.longitude
+            };
+
+            console.log('현재 위치:', currentLocation);
+
+            // 주소 변환
+            if (typeof kakao !== 'undefined' && kakao.maps && kakao.maps.services) {
+                const geocoder = new kakao.maps.services.Geocoder();
+                geocoder.coord2Address(currentLocation.lng, currentLocation.lat, (result, status) => {
+                    hideLoading();
+                    if (status === kakao.maps.services.Status.OK) {
+                        const address = result[0].address.address_name;
+                        document.getElementById('locationInput').value = address;
+                        alert('현재 위치가 설정되었습니다: ' + address);
+                    } else {
+                        document.getElementById('locationInput').value = '현재 위치';
+                        alert('주소 변환에 실패했지만 위치는 설정되었습니다.');
+                    }
+                });
+            } else {
+                hideLoading();
+                document.getElementById('locationInput').value = '현재 위치';
+                alert('위치가 설정되었습니다.');
+            }
+        },
+        (error) => {
+            clearTimeout(timeout);
+            hideLoading();
+            let message = '위치를 가져올 수 없습니다. ';
+            switch(error.code) {
+                case error.PERMISSION_DENIED:
+                    message += '위치 권한이 거부되었습니다. 브라우저 설정에서 위치 권한을 허용해주세요.';
+                    break;
+                case error.POSITION_UNAVAILABLE:
+                    message += '위치 정보를 사용할 수 없습니다.';
+                    break;
+                case error.TIMEOUT:
+                    message += '위치 정보 요청 시간이 초과되었습니다.';
+                    break;
+                default:
+                    message += '알 수 없는 오류가 발생했습니다.';
+            }
+            alert(message + ' 주소를 직접 입력해주세요.');
+        },
+        {
+            enableHighAccuracy: true,
+            timeout: 10000,
+            maximumAge: 0
+        }
+    );
 }
 
 // 거리 선택
@@ -152,21 +188,29 @@ async function recommendRestaurant() {
         return;
     }
 
+    console.log('식당 검색 시작:', {
+        location,
+        peopleCount,
+        distance: selectedDistance,
+        foodTypes: selectedFoodTypes
+    });
+
     showLoading();
 
     try {
         // 주소를 좌표로 변환
-        if (typeof kakao !== 'undefined') {
+        if (typeof kakao !== 'undefined' && kakao.maps) {
             await searchRestaurants();
+            // 로딩은 searchNearbyPlaces 콜백에서 hideLoading() 처리
         } else {
-            // API 키가 없을 때 데모 데이터 표시
+            console.error('카카오맵 API 미로드');
+            hideLoading();
             showDemoRestaurants();
         }
     } catch (error) {
         console.error('Error:', error);
-        alert('식당 검색 중 오류가 발생했습니다.');
-    } finally {
         hideLoading();
+        alert('식당 검색 중 오류가 발생했습니다: ' + error.message);
     }
 }
 
@@ -174,22 +218,32 @@ async function recommendRestaurant() {
 async function searchRestaurants() {
     const locationInput = document.getElementById('locationInput').value;
 
+    // 카카오 API 로드 확인
+    if (!kakao || !kakao.maps || !kakao.maps.services) {
+        console.error('카카오맵 API가 로드되지 않았습니다.');
+        showDemoRestaurants();
+        return;
+    }
+
     // 주소 → 좌표 변환
     const geocoder = new kakao.maps.services.Geocoder();
 
-    geocoder.addressSearch(locationInput, function(result, status) {
-        if (status === kakao.maps.services.Status.OK) {
-            currentLocation = {
-                lat: parseFloat(result[0].y),
-                lng: parseFloat(result[0].x)
-            };
+    return new Promise((resolve, reject) => {
+        geocoder.addressSearch(locationInput, function(result, status) {
+            if (status === kakao.maps.services.Status.OK) {
+                currentLocation = {
+                    lat: parseFloat(result[0].y),
+                    lng: parseFloat(result[0].x)
+                };
+                console.log('주소 검색 성공:', currentLocation);
+            } else {
+                console.log('주소 검색 실패, 기본 위치 사용');
+            }
 
             // 장소 검색
             searchNearbyPlaces();
-        } else {
-            // 좌표 검색 실패 시 현재 위치 사용
-            searchNearbyPlaces();
-        }
+            resolve();
+        });
     });
 }
 
@@ -215,9 +269,13 @@ function searchNearbyPlaces() {
     };
 
     ps.categorySearch('FD6', function(data, status) {
+        console.log('장소 검색 결과:', status, data);
+
         if (status === kakao.maps.services.Status.OK) {
             // 필터링 및 정렬
             let filtered = filterRestaurants(data);
+
+            console.log('필터링된 식당 수:', filtered.length);
 
             if (filtered.length > 0) {
                 // 랜덤하게 1-3개 선택
@@ -229,12 +287,16 @@ function searchNearbyPlaces() {
                     selected.push(shuffled[i]);
                 }
 
+                hideLoading();
                 displayResults(selected);
                 displayMap(selected);
             } else {
+                hideLoading();
                 alert('조건에 맞는 식당을 찾을 수 없습니다. 조건을 완화해보세요.');
             }
         } else {
+            console.error('장소 검색 실패:', status);
+            hideLoading();
             showDemoRestaurants();
         }
     }, options);

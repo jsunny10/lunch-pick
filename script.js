@@ -9,14 +9,41 @@ let markers = [];
 // 카카오맵 API 키 확인
 const KAKAO_API_KEY = '3ea26b20c31bc05c0d19a88ef20a3bcd'; // TODO: 실제 API 키로 교체
 
+// 디버그 콘솔 함수
+function debugLog(message, type = 'info') {
+    const debugConsole = document.getElementById('debugConsole');
+    const timestamp = new Date().toLocaleTimeString('ko-KR');
+    const color = type === 'error' ? '#f00' : type === 'warn' ? '#ff0' : '#0f0';
+
+    const logEntry = `<div style="color: ${color}; margin: 2px 0;">[${timestamp}] ${message}</div>`;
+    debugConsole.innerHTML = logEntry + debugConsole.innerHTML;
+
+    // 일반 콘솔에도 출력
+    console.log(`[${type}]`, message);
+}
+
 // 페이지 로드 시 초기화
 document.addEventListener('DOMContentLoaded', function() {
     updateBudgetLabel();
 
+    // 디버그 토글 버튼
+    document.getElementById('debugToggle').addEventListener('click', function() {
+        const debugConsole = document.getElementById('debugConsole');
+        debugConsole.style.display = debugConsole.style.display === 'none' ? 'block' : 'none';
+    });
+
     // 카카오맵 SDK 로드 확인
     if (typeof kakao === 'undefined') {
+        debugLog('카카오맵 API가 로드되지 않았습니다!', 'error');
         console.warn('카카오맵 API 키를 설정해주세요.');
+    } else {
+        debugLog('카카오맵 API 로드 성공', 'info');
     }
+
+    // 전역 에러 핸들러
+    window.addEventListener('error', function(e) {
+        debugLog(`오류: ${e.message}`, 'error');
+    });
 });
 
 // 인원 증가/감소
@@ -57,6 +84,7 @@ function getCurrentLocation() {
                 lng: position.coords.longitude
             };
 
+            debugLog(`위치 획득: ${currentLocation.lat.toFixed(4)}, ${currentLocation.lng.toFixed(4)}`, 'info');
             console.log('현재 위치:', currentLocation);
 
             // 주소 변환
@@ -85,16 +113,20 @@ function getCurrentLocation() {
             let message = '위치를 가져올 수 없습니다. ';
             switch(error.code) {
                 case error.PERMISSION_DENIED:
-                    message += '위치 권한이 거부되었습니다. 브라우저 설정에서 위치 권한을 허용해주세요.';
+                    message += '위치 권한이 거부되었습니다.';
+                    debugLog('위치 권한 거부됨', 'error');
                     break;
                 case error.POSITION_UNAVAILABLE:
                     message += '위치 정보를 사용할 수 없습니다.';
+                    debugLog('위치 정보 사용 불가', 'error');
                     break;
                 case error.TIMEOUT:
                     message += '위치 정보 요청 시간이 초과되었습니다.';
+                    debugLog('위치 요청 타임아웃', 'error');
                     break;
                 default:
                     message += '알 수 없는 오류가 발생했습니다.';
+                    debugLog(`위치 오류: ${error.message}`, 'error');
             }
             alert(message + ' 주소를 직접 입력해주세요.');
         },
@@ -188,6 +220,7 @@ async function recommendRestaurant() {
         return;
     }
 
+    debugLog(`검색 시작: ${location} (${selectedDistance}m, ${selectedFoodTypes.join('/')})`, 'info');
     console.log('식당 검색 시작:', {
         location,
         peopleCount,
@@ -235,8 +268,10 @@ async function searchRestaurants() {
                     lat: parseFloat(result[0].y),
                     lng: parseFloat(result[0].x)
                 };
+                debugLog(`주소→좌표: ${result[0].address_name}`, 'info');
                 console.log('주소 검색 성공:', currentLocation);
             } else {
+                debugLog('주소 검색 실패, 기본 위치 사용', 'warn');
                 console.log('주소 검색 실패, 기본 위치 사용');
             }
 
@@ -269,12 +304,14 @@ function searchNearbyPlaces() {
     };
 
     ps.categorySearch('FD6', function(data, status) {
+        debugLog(`식당 검색: ${data ? data.length : 0}개 발견`, 'info');
         console.log('장소 검색 결과:', status, data);
 
         if (status === kakao.maps.services.Status.OK) {
             // 필터링 및 정렬
             let filtered = filterRestaurants(data);
 
+            debugLog(`필터 후: ${filtered.length}개 식당`, filtered.length > 0 ? 'info' : 'warn');
             console.log('필터링된 식당 수:', filtered.length);
 
             if (filtered.length > 0) {
@@ -295,6 +332,7 @@ function searchNearbyPlaces() {
                 alert('조건에 맞는 식당을 찾을 수 없습니다. 조건을 완화해보세요.');
             }
         } else {
+            debugLog(`장소 검색 실패: ${status}`, 'error');
             console.error('장소 검색 실패:', status);
             hideLoading();
             showDemoRestaurants();
